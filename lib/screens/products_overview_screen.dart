@@ -4,13 +4,13 @@ import 'package:shop_app/providers/products_provider.dart';
 import 'package:shop_app/screens/views/product_item.dart';
 
 class ProductsOverviewScreen extends StatelessWidget {
-  ProductsOverviewScreen({Key? key}) : super(key: key);
+  const ProductsOverviewScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('My Shop')),
-      body: ProductsGrid(),
+      body: const ProductsGrid(),
     );
   }
 }
@@ -32,10 +32,14 @@ class ProductsGrid extends StatelessWidget {
           crossAxisSpacing: 10,
           mainAxisSpacing: 10),
       itemCount: products.length,
-      itemBuilder: (context, index) => ProductItem(
-          id: products[index].id,
-          title: products[index].title,
-          imageUrl: products[index].imageUrl),
+      itemBuilder: (context, index) => ChangeNotifierProvider(
+        create: (context) {},
+        builder: (context, child) => products[index] as Widget,
+        child: ProductItem(
+          // id: products[index].id,
+          // title: products[index].title,
+          // imageUrl: products[index].imageUrl
+          )),
     );
   }
 }

@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
           ),
           fontFamily: 'Lato',
         ),
-        home: SafeArea(child: ProductsOverviewScreen()),
-        routes: {'/product-details': (context) => ProductDetailScreen()},
+        home: const SafeArea(child: ProductsOverviewScreen()),
+        routes: {'/product-details': (context) => const ProductDetailScreen()},
       ),
     );
   }
