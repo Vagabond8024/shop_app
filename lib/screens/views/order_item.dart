@@ -18,7 +18,7 @@ class _OrderItemState extends State<OrderItem> {
   Widget build(BuildContext context) {
     // final orders = Provider.of<Orders>(context);
     return Card(
-      margin: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       child: Column(
         children: [
           ListTile(
@@ -36,7 +36,7 @@ class _OrderItemState extends State<OrderItem> {
           ),
           if (_expanded)
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
               height: min(widget.order.products.length * 20.0 + 10, 180),
               child: ListView(
                 children: widget.order.products
@@ -46,12 +46,12 @@ class _OrderItemState extends State<OrderItem> {
                         children: [
                           Text(
                             e.title,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           Text(
                             '${e.quantity}x \$${e.price}',
-                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                            style: const TextStyle(fontSize: 18, color: Colors.grey),
                           ),
                         ],
                       ),

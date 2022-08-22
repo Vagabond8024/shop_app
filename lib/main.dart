@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
         home: const SafeArea(child: ProductsOverviewScreen()),
         routes: {
           '/product-details': (context) => const ProductDetailScreen(),
-          '/cart': (context) => CartScreen(),
-          '/orders':(context) => OrdersScree()
+          '/cart': (context) => const CartScreen(),
+          '/orders':(context) => const OrdersScree()
         },
       ),
     );

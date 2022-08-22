@@ -35,16 +35,16 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               });
             },
             itemBuilder: (context) => [
-              PopupMenuItem(
-                child: Text('Only favorites'),
+              const PopupMenuItem(
                 value: FilterOptions.favorites,
+                child: Text('Only favorites'),
               ),
-              PopupMenuItem(
-                child: Text('Show all'),
+              const PopupMenuItem(
                 value: FilterOptions.all,
+                child: Text('Show all'),
               )
             ],
-            icon: Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert),
           ),
           Consumer<Cart>(
               builder: (context, value, ch) => Badge(
@@ -52,14 +52,14 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                     child: ch as Widget,
                   ),
               child: IconButton(
-                icon: Icon(Icons.shopping_cart),
+                icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
                   Navigator.of(context).pushNamed('/cart');
                 },
               ))
         ],
       ),
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       body: ProductsGrid(
         showOnlyFavorites: _showOnlyFavorites,
       ),
@@ -89,7 +89,7 @@ class ProductsGrid extends StatelessWidget {
       itemCount: products.length,
       itemBuilder: (context, index) => ChangeNotifierProvider.value(
         value: products[index],
-        child: ProductItem(
+        child: const ProductItem(
             // id: products[index].id,
             // title: products[index].title,
             // imageUrl: products[index].imageUrl
