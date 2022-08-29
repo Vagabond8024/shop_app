@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class UserProductItem extends StatelessWidget {
   final String title;
   final String imageUrl;
-  UserProductItem({Key? key, required this.title, required this.imageUrl})
+  const UserProductItem({Key? key, required this.title, required this.imageUrl})
       : super(key: key);
 
   @override
@@ -13,17 +13,17 @@ class UserProductItem extends StatelessWidget {
       leading: CircleAvatar(
         backgroundImage: NetworkImage(imageUrl),
       ),
-      trailing: Container(
+      trailing: SizedBox(
         width: 100,
         child: Row(
           children: [
             IconButton(
                 onPressed: () {},
-                icon: Icon(Icons.edit),
+                icon: const Icon(Icons.edit),
                 color: Theme.of(context).colorScheme.primary),
             IconButton(
               onPressed: () {},
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               color: Theme.of(context).errorColor,
             ),
           ],
