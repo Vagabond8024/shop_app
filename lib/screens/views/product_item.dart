@@ -46,7 +46,7 @@ class ProductItem extends StatelessWidget {
                 duration: const Duration(seconds: 2),
                 action: SnackBarAction(
                   label: 'UNDO',
-                  onPressed: () => cart.removeSngleItem(product.id),
+                  onPressed: () => cart.removeSngleItem(product.id!),
                 ),
               ));
             },

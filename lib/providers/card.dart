@@ -19,10 +19,10 @@ class Cart with ChangeNotifier {
     return {..._items};
   }
 
-  void addItem(String productId, String title, double price) {
+  void addItem(String? productId, String title, double price) {
     if (_items.containsKey(productId)) {
       _items.update(
-          productId,
+          productId!,
           (value) => CartItem(
               id: value.id,
               title: value.title,
@@ -30,7 +30,7 @@ class Cart with ChangeNotifier {
               price: value.price));
     } else {
       _items.putIfAbsent(
-          productId,
+          productId!,
           () => CartItem(
                 id: DateTime.now().toString(),
                 title: title,
