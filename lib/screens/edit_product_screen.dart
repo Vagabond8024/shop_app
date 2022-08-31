@@ -17,7 +17,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _imageUrlController = TextEditingController();
   final _form = GlobalKey<FormState>();
   var _editedProduct = Product(
-    id: '',
+    id: null,
     title: '',
     description: '',
     price: 0,
@@ -40,16 +40,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      final productId = ModalRoute.of(context)?.settings.arguments as String;
-      _editedProduct = Provider.of<ProductsProvider>(context, listen: false)
-          .findById(productId);
-      _initValues = {
-        'title': _editedProduct.title,
-        'description': _editedProduct.description,
-        'price': _editedProduct.price.toString(),
-        'imageUrl': '',
-      };
-      _imageUrlController.text = _editedProduct.imageUrl;
+      final productId = ModalRoute.of(context)?.settings.arguments as String?;
+      print(productId);
+      if (productId != null) {
+        _editedProduct = Provider.of<ProductsProvider>(context, listen: false)
+            .findById(productId);
+        _initValues = {
+          'title': _editedProduct.title,
+          'description': _editedProduct.description,
+          'price': _editedProduct.price.toString(),
+          'imageUrl': '',
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
     }
     _isInit = false;
     super.didChangeDependencies();
@@ -79,7 +82,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _form.currentState!.save();
     if (_editedProduct.id != null) {
       Provider.of<ProductsProvider>(context, listen: false)
-          .updateProduct(_editedProduct.id, _editedProduct);
+          .updateProduct(_editedProduct.id!, _editedProduct);
     } else {
       Provider.of<ProductsProvider>(context, listen: false)
           .addProduct(_editedProduct);
@@ -201,7 +204,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   ),
                   Expanded(
                     child: TextFormField(
-                      initialValue: _initValues['imageUrl'],
+                      // initialValue: _initValues['imageUrl'],
                       decoration: InputDecoration(labelText: 'Image Url'),
                       keyboardType: TextInputType.url,
                       textInputAction: TextInputAction.done,
