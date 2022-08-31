@@ -66,33 +66,36 @@ class ProductsProvider with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void addProduct(Product product) {
-    // const url = Uri.https(
-    //     'https://dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app', '/products.json');
-    // http
-    //     .post(url,
-    //         body: json.encode({
-    //           'title': product.title,
-    //           'description': product.description,
-    //           'price': product.price,
-    //           'imageUrl': product.imageUrl,
-    //           'isFavorite': product.isFavorite
-    //         }))
-    //     .then((value) {
-    //   print(value);
-    final newProduct = Product(
-        // id: json.decode(value.body)['name'],
-        id: DateTime.now().toString(),
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imageUrl: product.imageUrl);
+  Future<void> addProduct(Product product) {
+    final url = Uri.https(
+        'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
+        '/products.json');
+    return http
+        .post(url,
+            body: json.encode({
+              'title': product.title,
+              'description': product.description,
+              'price': product.price,
+              'imageUrl': product.imageUrl,
+              'isFavorite': product.isFavorite
+            }))
+        .then((value) {
+      print(value);
+      final newProduct = Product(
+          id: json.decode(value.body)['name'],
+          // id: DateTime.now().toString(),
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.imageUrl);
 
-    _items.add(newProduct);
-    print(newProduct);
-    print(_items);
-    notifyListeners();
-    // });
+      _items.add(newProduct);
+
+      notifyListeners();
+    }).catchError((error) {
+      print(error);
+      throw error;
+    });
   }
 
   void updateProduct(String id, Product newProduct) {
