@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/models/http_exeptions.dart';
 import 'package:shop_app/providers/product.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ProductsProvider with ChangeNotifier {
-  final List<Product> _items = [
-    Product(
-      id: 'p1',
-      title: 'Red Shirt',
-      description: 'A red shirt - it is pretty red!',
-      price: 29.99,
-      imageUrl:
-          'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-    ),
+  List<Product> _items = [
+    // Product(
+    //   id: 'p1',
+    //   title: 'Red Shirt',
+    //   description: 'A red shirt - it is pretty red!',
+    //   price: 29.99,
+    //   imageUrl:
+    //       'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
+    // ),
     // Product(
     //   id: 'p2',
     //   title: 'Trousers',
@@ -66,23 +67,46 @@ class ProductsProvider with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> addProduct(Product product) {
+  Future<void> fetchAndSetProduct() async {
     final url = Uri.https(
         'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
         '/products.json');
-    return http
-        .post(url,
-            body: json.encode({
-              'title': product.title,
-              'description': product.description,
-              'price': product.price,
-              'imageUrl': product.imageUrl,
-              'isFavorite': product.isFavorite
-            }))
-        .then((value) {
-      print(value);
+    try {
+      final response = await http.get(url);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final List<Product> loadedProducts = [];
+      extractedData.forEach((key, value) {
+        loadedProducts.add(Product(
+            id: key,
+            title: value['title'],
+            isFavorite: value['isFavorite'],
+            description: value['description'],
+            price: value['price'],
+            imageUrl: value['imageUrl']));
+      });
+      _items = loadedProducts;
+      notifyListeners();
+    } catch (error) {
+      throw (error);
+    }
+  }
+
+  Future<void> addProduct(Product product) async {
+    final url = Uri.https(
+        'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
+        '/products.json');
+    try {
+      final response = await http.post(url,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+            'isFavorite': product.isFavorite
+          }));
+
       final newProduct = Product(
-          id: json.decode(value.body)['name'],
+          id: json.decode(response.body)['name'],
           // id: DateTime.now().toString(),
           title: product.title,
           description: product.description,
@@ -92,22 +116,44 @@ class ProductsProvider with ChangeNotifier {
       _items.add(newProduct);
 
       notifyListeners();
-    }).catchError((error) {
-      print(error);
+    } catch (error) {
       throw error;
-    });
+    }
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final productIndex = _items.indexWhere((element) => element.id == id);
+    final url = Uri.https(
+        'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
+        '/products/$id.json');
     if (productIndex >= 0) {
+      http.patch(url,
+          body: json.encode({
+            "title": newProduct.title,
+            "description": newProduct.description,
+            "price": newProduct.price,
+            "imageUrl": newProduct.imageUrl
+          }));
       _items[productIndex] = newProduct;
       notifyListeners();
     }
   }
 
-  void deleteProduct(String? id) {
-    _items.removeWhere((element) => element.id == id);
+  Future<void> deleteProduct(String? id) async {
+    final url = Uri.https(
+        'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
+        '/products/$id.json');
+    final existingProductIndex =
+        _items.indexWhere((element) => element.id == id);
+    var existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw HttpExeptions('Could not delete product');
+    }
   }
 }

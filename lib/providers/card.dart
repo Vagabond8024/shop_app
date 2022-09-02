@@ -70,7 +70,6 @@ class Cart with ChangeNotifier {
   }
 
   int get itemCount {
-    print(_items);
     return _items.length;
   }
 

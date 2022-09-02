@@ -42,7 +42,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void didChangeDependencies() {
     if (_isInit) {
       final productId = ModalRoute.of(context)?.settings.arguments as String?;
-      print(productId);
+
       if (productId != null) {
         _editedProduct = Provider.of<ProductsProvider>(context, listen: false)
             .findById(productId);
@@ -75,7 +75,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
@@ -85,16 +85,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _isLoading = true;
     });
     if (_editedProduct.id != null) {
-      Provider.of<ProductsProvider>(context, listen: false)
+      await Provider.of<ProductsProvider>(context, listen: false)
           .updateProduct(_editedProduct.id!, _editedProduct);
       setState(() {
         _isLoading = false;
       });
+      Navigator.of(context).pop();
     } else {
-      Provider.of<ProductsProvider>(context, listen: false)
-          .addProduct(_editedProduct)
-          .catchError((error) {
-        return showDialog(
+      try {
+        await Provider.of<ProductsProvider>(context, listen: false)
+            .addProduct(_editedProduct);
+      } catch (error) {
+        showDialog(
             context: context,
             builder: (context) => AlertDialog(
                   title: Text('An error occurred!'),
@@ -107,12 +109,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         child: Text('Okay'))
                   ],
                 ));
-      }).then((value) {
+      } finally {
         setState(() {
           _isLoading = false;
         });
         Navigator.of(context).pop();
-      });
+      }
     }
   }
 
