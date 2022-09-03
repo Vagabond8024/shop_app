@@ -12,39 +12,47 @@ class OrdersScree extends StatefulWidget {
 }
 
 class _OrdersScreeState extends State<OrdersScree> {
-  bool _isLoading = false;
+  Future? _ordersFuture;
+  Future _obtainOrdersFuture() {
+    return Provider.of<Orders>(context, listen: false).getchAndSetOrders();
+  }
 
   @override
   void initState() {
-    Future.delayed(Duration.zero).then((value) async {
-      setState(() {
-        _isLoading = true;
-      });
-      await Provider.of<Orders>(context, listen: false).getchAndSetOrders();
-      setState(() {
-        _isLoading = false;
-      });
-    });
-
+    _ordersFuture = _obtainOrdersFuture();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final orders = Provider.of<Orders>(context);
+    // final orders = Provider.of<Orders>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Your Orders'),
-      ),
-      drawer: AppDrawer(),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: orders.orders.length,
-              itemBuilder: (context, index) {
-                return oi.OrderItem(order: orders.orders[index]);
-              },
-            ),
-    );
+        appBar: AppBar(
+          title: const Text('Your Orders'),
+        ),
+        drawer: AppDrawer(),
+        body: FutureBuilder(
+          future: _ordersFuture,
+          // initialData: InitialData,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else {
+              if (snapshot.error != null) {
+                return Center(
+                  child: Text('Error occured'),
+                );
+              } else {
+                return Consumer<Orders>(
+                    builder: (context, value, child) => ListView.builder(
+                          itemCount: value.orders.length,
+                          itemBuilder: (context, index) {
+                            return oi.OrderItem(order: value.orders[index]);
+                          },
+                        ));
+              }
+            }
+          },
+        ));
   }
 }
