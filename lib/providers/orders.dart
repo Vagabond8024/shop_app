@@ -18,10 +18,37 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  final List<OrderItem> _orders = [];
+  List<OrderItem> _orders = [];
 
   List<OrderItem> get orders {
     return [..._orders];
+  }
+
+  Future<void> getchAndSetOrders() async {
+    final url = Uri.https(
+        'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
+        '/orders.json');
+    final response = await http.get(url);
+    final List<OrderItem> loadedOrders = [];
+    final extacetedData = json.decode(response.body) as Map<String, dynamic>;
+    if (extacetedData == null) {
+      return;
+    }
+    extacetedData.forEach((key, value) {
+      loadedOrders.add(OrderItem(
+          id: key,
+          amount: value['amount'],
+          products: (value['products'] as List<dynamic>)
+              .map((e) => CartItem(
+                  id: e['id'],
+                  title: e['title'],
+                  quantity: e['quantity'],
+                  price: e['price']))
+              .toList(),
+          dateTime: DateTime.parse(value['dateTime'])));
+    });
+    _orders = loadedOrders;
+    notifyListeners();
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
@@ -33,12 +60,14 @@ class Orders with ChangeNotifier {
         body: json.encode({
           'amount': total,
           'dateTime': timesteamp.toIso8601String(),
-          'products': cartProducts.map((e)=>{
-            'id': e.id,
-            'title': e.title,
-            'quantity': e.quantity,
-            'price': e.price
-          }).toList()
+          'products': cartProducts
+              .map((e) => {
+                    'id': e.id,
+                    'title': e.title,
+                    'quantity': e.quantity,
+                    'price': e.price
+                  })
+              .toList()
         }));
     _orders.insert(
       0,
