@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shop_app/providers/card.dart';
 import 'package:shop_app/providers/orders.dart';
 import 'package:shop_app/providers/products_provider.dart';
+import 'package:shop_app/screens/auth_screen.dart';
 import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/screens/edit_product_screen.dart';
 import 'package:shop_app/screens/orders_scree.dart';
@@ -38,13 +39,14 @@ class MyApp extends StatelessWidget {
           ),
           fontFamily: 'Lato',
         ),
-        home: const SafeArea(child: ProductsOverviewScreen()),
+        home: const SafeArea(child: AuthScreen()),
         routes: {
           '/product-details': (context) => const ProductDetailScreen(),
           '/cart': (context) => const CartScreen(),
           '/orders': (context) => const OrdersScree(),
           '/user-products': (context) => const UserProductsScreen(),
-          '/edit-product':(context) => const EditProductScreen(),
+          '/edit-product': (context) => const EditProductScreen(),
+          '/auth': (context) => const AuthScreen()
         },
       ),
     );
