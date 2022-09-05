@@ -30,17 +30,17 @@ class _OrdersScreeState extends State<OrdersScree> {
         appBar: AppBar(
           title: const Text('Your Orders'),
         ),
-        drawer: AppDrawer(),
+        drawer: const AppDrawer(),
         body: FutureBuilder(
           future: _ordersFuture,
           // initialData: InitialData,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: const CircularProgressIndicator());
             } else {
               if (snapshot.error != null) {
-                return Center(
-                  child: Text('Error occured'),
+                return const Center(
+                  child: const Text('Error occured'),
                 );
               } else {
                 return Consumer<Orders>(

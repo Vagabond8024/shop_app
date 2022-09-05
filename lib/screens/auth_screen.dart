@@ -51,14 +51,14 @@ class AuthScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                         color: Colors.deepOrange.shade900,
                         boxShadow: [
-                          const BoxShadow(
+                          BoxShadow(
                             blurRadius: 8,
                             color: Colors.black26,
-                            offset: const Offset(0, 2),
+                            offset: Offset(0, 2),
                           )
                         ],
                       ),
-                      child: Text(
+                      child: const Text(
                         'MyShop',
                         style: TextStyle(
                           color: Colors.white,
@@ -95,7 +95,7 @@ class AuthCard extends StatefulWidget {
 class _AuthCardState extends State<AuthCard> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.login;
-  Map<String, String?> _authData = {
+  final Map<String, String?> _authData = {
     'email': '',
     'password': '',
   };
