@@ -99,14 +99,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
-                  title: Text('An error occurred!'),
-                  content: Text('Something went wrong'),
+                  title: const Text('An error occurred!'),
+                  content: const Text('Something went wrong'),
                   actions: [
                     TextButton(
                         onPressed: (() {
                           Navigator.of(context).pop();
                         }),
-                        child: Text('Okay'))
+                        child: const Text('Okay'))
                   ],
                 ));
       } finally {
@@ -122,22 +122,22 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Product'),
-        actions: [IconButton(onPressed: _saveForm, icon: Icon(Icons.save))],
+        title: const Text('Edit Product'),
+        actions: [IconButton(onPressed: _saveForm, icon: const Icon(Icons.save))],
       ),
       body: _isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Form(
                 key: _form,
                 child: ListView(
                   children: [
                     TextFormField(
                       initialValue: _initValues['title'],
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Title',
                       ),
                       textInputAction: TextInputAction.next,
@@ -161,7 +161,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                     TextFormField(
                       initialValue: _initValues['price'],
-                      decoration: InputDecoration(labelText: 'Price'),
+                      decoration: const InputDecoration(labelText: 'Price'),
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.number,
                       focusNode: _priceFocusNode,
@@ -191,7 +191,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                     TextFormField(
                       initialValue: _initValues['description'],
-                      decoration: InputDecoration(labelText: 'Description'),
+                      decoration: const InputDecoration(labelText: 'Description'),
                       maxLines: 3,
                       keyboardType: TextInputType.multiline,
                       // textInputAction: TextInputAction.next,
@@ -221,14 +221,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         Container(
                           width: 100,
                           height: 100,
-                          margin: EdgeInsets.only(top: 8, right: 10),
+                          margin: const EdgeInsets.only(top: 8, right: 10),
                           decoration: BoxDecoration(
                               border: Border.all(
                             width: 1,
                             color: Colors.grey,
                           )),
                           child: _imageUrlController.text.isEmpty
-                              ? Text('Enter a Url')
+                              ? const Text('Enter a Url')
                               : FittedBox(
                                   child:
                                       Image.network(_imageUrlController.text),
@@ -238,7 +238,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         Expanded(
                           child: TextFormField(
                             // initialValue: _initValues['imageUrl'],
-                            decoration: InputDecoration(labelText: 'Image Url'),
+                            decoration: const InputDecoration(labelText: 'Image Url'),
                             keyboardType: TextInputType.url,
                             textInputAction: TextInputAction.done,
                             controller: _imageUrlController,
