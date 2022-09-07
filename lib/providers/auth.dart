@@ -2,15 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_app/helpers/api_key.dart';
 import 'package:shop_app/models/http_exeptions.dart';
 
 class Auth with ChangeNotifier {
   String? _token;
   DateTime? _expiryDate;
   String? _userId;
-
-  // ignore: non_constant_identifier_names
-  String API_KEY = 'AIzaSyB4UGN9X9FVXbPGTtbVMkOlOpSBOGDomts';
 
   bool get isAuth {
     return token != null;
