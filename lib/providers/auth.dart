@@ -9,11 +9,27 @@ class Auth with ChangeNotifier {
   DateTime? _expiryDate;
   String? _userId;
 
+  // ignore: non_constant_identifier_names
+  String API_KEY = 'AIzaSyB4UGN9X9FVXbPGTtbVMkOlOpSBOGDomts';
+
+  bool get isAuth {
+    return token != null;
+  }
+
+  String? get token {
+    if (_expiryDate != null &&
+        _expiryDate!.isAfter(DateTime.now()) &&
+        _token != null) {
+      return _token;
+    }
+    return null;
+  }
+
   Future<void> _auth(String email, String pas, String method) async {
     final url = Uri.https(
         'identitytoolkit.googleapis.com',
         '/v1/accounts:$method',
-        {'key': 'AIzaSyDu4UhChVkSEUqxSa6AfQhZ3d9JSt7rp9A'});
+        {'key': API_KEY});
     try {
       final response = await http.post(url,
           body: json.encode({
@@ -21,11 +37,15 @@ class Auth with ChangeNotifier {
             'password': pas,
             'returnSecureToken': true,
           }));
-      print(response.body);
       final responseData = json.decode(response.body);
       if (responseData['error'] != null) {
         throw HttpExeptions(responseData['error']['message']);
       }
+      _token = responseData['idToken'];
+      _userId = responseData['localId'];
+      _expiryDate = DateTime.now()
+          .add(Duration(seconds: int.parse(responseData['expiresIn'])));
+      notifyListeners();
     } catch (error) {
       rethrow;
     }

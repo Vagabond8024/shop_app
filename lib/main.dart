@@ -9,6 +9,7 @@ import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/screens/edit_product_screen.dart';
 import 'package:shop_app/screens/orders_scree.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
+import 'package:shop_app/screens/products_overview_screen.dart';
 import 'package:shop_app/screens/user_products_screen.dart';
 
 void main() => runApp(const MyApp());
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
           return Orders();
         }),
       ],
-      child: MaterialApp(
+      child: Consumer<Auth>(builder: (context, value, child) => MaterialApp(
         title: 'MyShop',
         theme: ThemeData(
           colorScheme:
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
           ),
           fontFamily: 'Lato',
         ),
-        home: const SafeArea(child: AuthScreen()),
+        home: value.isAuth ? ProductsOverviewScreen() : AuthScreen(),
         routes: {
           '/product-details': (context) => const ProductDetailScreen(),
           '/cart': (context) => const CartScreen(),
@@ -49,7 +50,7 @@ class MyApp extends StatelessWidget {
           '/edit-product': (context) => const EditProductScreen(),
           '/auth': (context) => const AuthScreen()
         },
-      ),
+      ),)
     );
   }
 }
