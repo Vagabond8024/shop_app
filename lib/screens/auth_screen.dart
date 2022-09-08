@@ -39,7 +39,7 @@ class AuthScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
+                children: [
                   Flexible(
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 20.0),
@@ -51,7 +51,7 @@ class AuthScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: Colors.deepOrange.shade900,
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             blurRadius: 8,
                             color: Colors.black26,
@@ -107,14 +107,14 @@ class _AuthCardState extends State<AuthCard> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('An error occurred'),
+        title: const Text('An error occurred'),
         content: Text(message),
         actions: [
           TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Okay'))
+              child: const Text('Okay'))
         ],
       ),
     );
@@ -190,77 +190,87 @@ class _AuthCardState extends State<AuthCard> {
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
+            child: Column(children: [
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'E-Mail'),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value!.isEmpty || !value.contains('@')) {
+                    return 'Invalid email!';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _authData['email'] = value;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Password'),
+                obscureText: true,
+                controller: _passwordController,
+                validator: (value) {
+                  if (value!.isEmpty || value.length < 5) {
+                    return 'Password is too short!';
+                  }
+                },
+                onSaved: (value) {
+                  _authData['password'] = value;
+                },
+              ),
+              if (_authMode == AuthMode.signup)
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'E-Mail'),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value!.isEmpty || !value.contains('@')) {
-                      return 'Invalid email!';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _authData['email'] = value;
-                  },
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Password'),
+                  enabled: _authMode == AuthMode.signup,
+                  decoration:
+                      const InputDecoration(labelText: 'Confirm Password'),
                   obscureText: true,
-                  controller: _passwordController,
-                  validator: (value) {
-                    if (value!.isEmpty || value.length < 5) {
-                      return 'Password is too short!';
-                    }
-                  },
-                  onSaved: (value) {
-                    _authData['password'] = value;
-                  },
-                ),
-                if (_authMode == AuthMode.signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.signup,
-                    decoration:
-                        const InputDecoration(labelText: 'Confirm Password'),
-                    obscureText: true,
-                    validator: _authMode == AuthMode.signup
-                        ? (value) {
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
-                            }
+                  validator: _authMode == AuthMode.signup
+                      ? (value) {
+                          if (value != _passwordController.text) {
+                            return 'Passwords do not match!';
                           }
-                        : null,
-                  ),
-                const SizedBox(
-                  height: 20,
+                        }
+                      : null,
                 ),
-                if (_isLoading)
-                  const CircularProgressIndicator()
-                else
-                  RaisedButton(
-                    onPressed: _submit,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30.0, vertical: 8.0),
-                    color: Theme.of(context).colorScheme.primary,
-                    textColor: Colors.white,
-                    child:
-                        Text(_authMode == AuthMode.login ? 'login' : 'SIGN UP'),
+              const SizedBox(
+                height: 20,
+              ),
+              if (_isLoading)
+                const CircularProgressIndicator()
+              else
+                ElevatedButton(
+                  onPressed: _submit,
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0))),
+                    padding: MaterialStateProperty.all<EdgeInsets>(
+                        const EdgeInsets.all(10)),
+                    overlayColor: MaterialStateProperty.all<Color>(
+                        Theme.of(context).colorScheme.primary),
                   ),
-                FlatButton(
-                  onPressed: _switchAuthMode,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  textColor: Theme.of(context).colorScheme.primary,
                   child: Text(
-                      '${_authMode == AuthMode.login ? 'signup' : 'login'} INSTEAD'),
+                    _authMode == AuthMode.login ? 'Login' : 'SIGN UP',
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
-              ],
-            ),
+              TextButton(
+                onPressed: _switchAuthMode,
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                      const EdgeInsets.symmetric(
+                          horizontal: 30.0, vertical: 4)),
+                  overlayColor: MaterialStateProperty.all<Color>(
+                      Theme.of(context).colorScheme.primary),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  '${_authMode == AuthMode.login ? 'Signup' : 'Login'} instead',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              )
+            ]),
           ),
         ),
       ),
