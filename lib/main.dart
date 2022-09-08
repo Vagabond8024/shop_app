@@ -20,37 +20,40 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: Auth()),
-        ChangeNotifierProvider(create: (BuildContext context) {
-          return ProductsProvider();
-        }),
-        ChangeNotifierProvider(create: (BuildContext context) {
-          return Cart();
-        }),
-        ChangeNotifierProvider(create: (BuildContext context) {
-          return Orders();
-        }),
-      ],
-      child: Consumer<Auth>(builder: (context, value, child) => MaterialApp(
-        title: 'MyShop',
-        theme: ThemeData(
-          colorScheme:
-              ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(
-            secondary: Colors.deepOrange,
+        providers: [
+          ChangeNotifierProvider.value(value: Auth()),
+          ChangeNotifierProxyProvider<Auth, ProductsProvider>(
+              create: (context) => ProductsProvider(
+                  Provider.of<Auth>(context, listen: false).token, []),
+              update: ((context, value, previous) => ProductsProvider(
+                  value.token!, previous == null ? [] : previous.items))),
+          ChangeNotifierProvider(create: (BuildContext context) {
+            return Cart();
+          }),
+          ChangeNotifierProvider(create: (BuildContext context) {
+            return Orders();
+          }),
+        ],
+        child: Consumer<Auth>(
+          builder: (context, value, child) => MaterialApp(
+            title: 'MyShop',
+            theme: ThemeData(
+              colorScheme:
+                  ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(
+                secondary: Colors.deepOrange,
+              ),
+              fontFamily: 'Lato',
+            ),
+            home: value.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+            routes: {
+              '/product-details': (context) => const ProductDetailScreen(),
+              '/cart': (context) => const CartScreen(),
+              '/orders': (context) => const OrdersScree(),
+              '/user-products': (context) => const UserProductsScreen(),
+              '/edit-product': (context) => const EditProductScreen(),
+              '/auth': (context) => const AuthScreen()
+            },
           ),
-          fontFamily: 'Lato',
-        ),
-        home: value.isAuth ? ProductsOverviewScreen() : AuthScreen(),
-        routes: {
-          '/product-details': (context) => const ProductDetailScreen(),
-          '/cart': (context) => const CartScreen(),
-          '/orders': (context) => const OrdersScree(),
-          '/user-products': (context) => const UserProductsScreen(),
-          '/edit-product': (context) => const EditProductScreen(),
-          '/auth': (context) => const AuthScreen()
-        },
-      ),)
-    );
+        ));
   }
 }

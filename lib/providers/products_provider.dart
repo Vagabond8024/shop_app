@@ -5,6 +5,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ProductsProvider with ChangeNotifier {
+  final String? token;
+    ProductsProvider(this.token, this._items);
+
   List<Product> _items = [
     // Product(
     //   id: 'p1',
@@ -66,17 +69,18 @@ class ProductsProvider with ChangeNotifier {
   //   _showFavoritesOnly = false;
   //   notifyListeners();
   // }
+  
 
   Future<void> fetchAndSetProduct() async {
     final url = Uri.https(
         'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products.json');
+        '/products.json', {'auth': token});
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       if (extractedData == null) {
-      return;
-    }
+        return;
+      }
       final List<Product> loadedProducts = [];
       extractedData.forEach((key, value) {
         loadedProducts.add(Product(
