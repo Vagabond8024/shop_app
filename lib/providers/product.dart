@@ -25,14 +25,15 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleFavorites() async {
+  void toggleFavorites(String token) async {
     final oldStatus = isFavorite;
 
     isFavorite = !isFavorite;
     notifyListeners();
     final url = Uri.https(
         'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products/$id.json');
+        '/products/$id.json',
+        {'auth': token});
     try {
       final response =
           await http.patch(url, body: json.encode({'isFavorite': isFavorite}));
