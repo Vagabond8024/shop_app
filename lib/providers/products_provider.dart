@@ -6,7 +6,7 @@ import 'dart:convert';
 
 class ProductsProvider with ChangeNotifier {
   final String? token;
-    ProductsProvider(this.token, this._items);
+  ProductsProvider(this.token, this._items);
 
   List<Product> _items = [
     // Product(
@@ -69,12 +69,12 @@ class ProductsProvider with ChangeNotifier {
   //   _showFavoritesOnly = false;
   //   notifyListeners();
   // }
-  
 
   Future<void> fetchAndSetProduct() async {
     final url = Uri.https(
         'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products.json', {'auth': token});
+        '/products.json',
+        {'auth': token});
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -101,7 +101,8 @@ class ProductsProvider with ChangeNotifier {
   Future<void> addProduct(Product product) async {
     final url = Uri.https(
         'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products.json');
+        '/products.json',
+        {'auth': token});
     try {
       final response = await http.post(url,
           body: json.encode({
@@ -132,7 +133,8 @@ class ProductsProvider with ChangeNotifier {
     final productIndex = _items.indexWhere((element) => element.id == id);
     final url = Uri.https(
         'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products/$id.json');
+        '/products/$id.json',
+        {'auth': token});
     if (productIndex >= 0) {
       http.patch(url,
           body: json.encode({
@@ -149,7 +151,8 @@ class ProductsProvider with ChangeNotifier {
   Future<void> deleteProduct(String? id) async {
     final url = Uri.https(
         'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products/$id.json');
+        '/products/$id.json',
+        {'auth': token});
     final existingProductIndex =
         _items.indexWhere((element) => element.id == id);
     var existingProduct = _items[existingProductIndex];
