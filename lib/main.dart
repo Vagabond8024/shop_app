@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
               ),
               fontFamily: 'Lato',
             ),
-            home: value.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+            home: value.isAuth ? const ProductsOverviewScreen() : const AuthScreen(),
             routes: {
               '/product-details': (context) => const ProductDetailScreen(),
               '/cart': (context) => const CartScreen(),
