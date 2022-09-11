@@ -6,7 +6,7 @@ import 'dart:convert';
 
 class ProductsProvider with ChangeNotifier {
   final String? token;
-  final String userId;
+  final String? userId;
   ProductsProvider(this.token, this._items, this.userId);
 
   List<Product> _items = [
@@ -80,10 +80,9 @@ class ProductsProvider with ChangeNotifier {
       queryParams.addAll({'equalTo': '"$userId"'});
     }
     final url = Uri.https(
-      'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
-      '/products.json',
-      queryParams
-    );
+        'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
+        '/products.json',
+        queryParams);
     //
     // print(url);
     try {

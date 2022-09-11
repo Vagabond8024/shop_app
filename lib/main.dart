@@ -10,6 +10,7 @@ import 'package:shop_app/screens/edit_product_screen.dart';
 import 'package:shop_app/screens/orders_scree.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
 import 'package:shop_app/screens/products_overview_screen.dart';
+import 'package:shop_app/screens/splash_screen.dart';
 import 'package:shop_app/screens/user_products_screen.dart';
 
 void main() => runApp(const MyApp());
@@ -23,20 +24,20 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider.value(value: Auth()),
           ChangeNotifierProxyProvider<Auth, ProductsProvider>(
-              create: (context) =>
-                  ProductsProvider(Provider.of<Auth>(context, listen: false).token, [], ''),
+              create: (context) => ProductsProvider(
+                  Provider.of<Auth>(context, listen: false).token, [], ''),
               update: ((context, value, previous) => ProductsProvider(
-                  value.token!,
+                  value.token,
                   previous == null ? [] : previous.items,
-                  value.userId!))),
+                  value.userId))),
           ChangeNotifierProvider(create: (BuildContext context) {
             return Cart();
           }),
           ChangeNotifierProxyProvider<Auth, Orders>(
-              create: (context) =>
-                  Orders(Provider.of<Auth>(context, listen: false).token, []),
-              update: ((context, value, previous) => Orders(
-                  value.token!, previous == null ? [] : previous.orders))),
+              create: (context) => Orders(
+                  Provider.of<Auth>(context, listen: false).token, [], ''),
+              update: ((context, value, previous) => Orders(value.token!,
+                  previous == null ? [] : previous.orders, value.userId!))),
         ],
         child: Consumer<Auth>(
           builder: (context, value, child) => MaterialApp(
@@ -50,7 +51,12 @@ class MyApp extends StatelessWidget {
             ),
             home: value.isAuth
                 ? const ProductsOverviewScreen()
-                : const AuthScreen(),
+                : FutureBuilder(
+                    future: value.tryAutoLogin(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) =>
+                        snapshot.connectionState == ConnectionState.waiting
+                            ? SplashScreen()
+                            : AuthScreen()),
             routes: {
               '/product-details': (context) => const ProductDetailScreen(),
               '/cart': (context) => const CartScreen(),
