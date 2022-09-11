@@ -6,7 +6,8 @@ import 'dart:convert';
 
 class ProductsProvider with ChangeNotifier {
   final String? token;
-  ProductsProvider(this.token, this._items);
+  final String userId;
+  ProductsProvider(this.token, this._items, this.userId);
 
   List<Product> _items = [
     // Product(
@@ -70,23 +71,42 @@ class ProductsProvider with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> fetchAndSetProduct() async {
+  Future<void> fetchAndSetProduct([bool filterByUser = false]) async {
+    final queryParams = {
+      'auth': token,
+      'orderBy': '"creatorId"',
+    };
+    if (filterByUser) {
+      queryParams.addAll({'equalTo': '"$userId"'});
+    }
     final url = Uri.https(
-        'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products.json',
-        {'auth': token});
+      'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
+      '/products.json',
+      queryParams
+    );
+    //
+    // print(url);
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      // print(extractedData);
       // if (extractedData == null) {
       //   return;
       // }
+      final favoriteResponse = await http.get(Uri.https(
+          'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
+          'userFavorites/$userId.json',
+          {'auth': token}));
+      final favoriteData = json.decode(favoriteResponse.body);
+
       final List<Product> loadedProducts = [];
       extractedData.forEach((key, value) {
         loadedProducts.add(Product(
             id: key,
             title: value['title'],
-            isFavorite: value['isFavorite'],
+            isFavorite: favoriteData == null || favoriteData[key] == null
+                ? false
+                : favoriteData[key]['isFavorite'] ?? false,
             description: value['description'],
             price: value['price'],
             imageUrl: value['imageUrl']));
@@ -110,7 +130,8 @@ class ProductsProvider with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageUrl': product.imageUrl,
-            'isFavorite': product.isFavorite
+            'creatorId': userId
+            // 'isFavorite': product.isFavorite
           }));
 
       final newProduct = Product(

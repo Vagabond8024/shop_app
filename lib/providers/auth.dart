@@ -23,11 +23,13 @@ class Auth with ChangeNotifier {
     return null;
   }
 
+  String? get userId {
+    return _userId;
+  }
+
   Future<void> _auth(String email, String pas, String method) async {
-    final url = Uri.https(
-        'identitytoolkit.googleapis.com',
-        '/v1/accounts:$method',
-        {'key': API_KEY});
+    final url = Uri.https('identitytoolkit.googleapis.com',
+        '/v1/accounts:$method', {'key': API_KEY});
     try {
       final response = await http.post(url,
           body: json.encode({
