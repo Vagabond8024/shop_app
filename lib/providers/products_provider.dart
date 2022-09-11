@@ -71,14 +71,25 @@ class ProductsProvider with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> fetchAndSetProduct() async {
+  Future<void> fetchAndSetProduct([bool filterByUser = false]) async {
+    final queryParams = {
+      'auth': token,
+      'orderBy': '"creatorId"',
+    };
+    if (filterByUser) {
+      queryParams.addAll({'equalTo': '"$userId"'});
+    }
     final url = Uri.https(
-        'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products.json',
-        {'auth': token});
+      'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
+      '/products.json',
+      queryParams
+    );
+    //
+    // print(url);
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      // print(extractedData);
       // if (extractedData == null) {
       //   return;
       // }
@@ -87,14 +98,13 @@ class ProductsProvider with ChangeNotifier {
           'userFavorites/$userId.json',
           {'auth': token}));
       final favoriteData = json.decode(favoriteResponse.body);
-      print(favoriteData);
-      print(extractedData);
+
       final List<Product> loadedProducts = [];
       extractedData.forEach((key, value) {
         loadedProducts.add(Product(
             id: key,
             title: value['title'],
-            isFavorite: favoriteData[key] == null
+            isFavorite: favoriteData == null || favoriteData[key] == null
                 ? false
                 : favoriteData[key]['isFavorite'] ?? false,
             description: value['description'],
@@ -120,6 +130,7 @@ class ProductsProvider with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageUrl': product.imageUrl,
+            'creatorId': userId
             // 'isFavorite': product.isFavorite
           }));
 

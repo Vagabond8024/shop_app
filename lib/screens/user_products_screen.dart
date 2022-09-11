@@ -9,12 +9,12 @@ class UserProductsScreen extends StatelessWidget {
 
   Future<void> _refreshProduct(BuildContext context) async {
     await Provider.of<ProductsProvider>(context, listen: false)
-        .fetchAndSetProduct();
+        .fetchAndSetProduct(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final productsData = Provider.of<ProductsProvider>(context);
+    // final productsData = Provider.of<ProductsProvider>(context);
     return Scaffold(
         appBar: AppBar(
           title: const Text('Your products'),
@@ -27,28 +27,38 @@ class UserProductsScreen extends StatelessWidget {
           ],
         ),
         drawer: const AppDrawer(),
-        body: RefreshIndicator(
-          onRefresh: () {
-            return _refreshProduct(context);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: ListView.builder(
-              itemCount: productsData.items.length,
-              itemBuilder: (_, index) {
-                return Column(
-                  children: [
-                    UserProductItem(
-                      id: productsData.items[index].id,
-                      title: productsData.items[index].title,
-                      imageUrl: productsData.items[index].imageUrl,
+        body: FutureBuilder(
+          future: _refreshProduct(context),
+          builder: (context, snapshot) =>
+              snapshot.connectionState == ConnectionState.waiting
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: () {
+                        return _refreshProduct(context);
+                      },
+                      child: Consumer<ProductsProvider>(
+                        builder: (context, productsData, _) =>  Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: ListView.builder(
+                            itemCount: productsData.items.length,
+                            itemBuilder: (_, index) {
+                              return Column(
+                                children: [
+                                  UserProductItem(
+                                    id: productsData.items[index].id,
+                                    title: productsData.items[index].title,
+                                    imageUrl: productsData.items[index].imageUrl,
+                                  ),
+                                  const Divider()
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                     ),
-                    const Divider()
-                  ],
-                );
-              },
-            ),
-          ),
         ));
   }
 }

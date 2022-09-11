@@ -40,7 +40,7 @@ class Product with ChangeNotifier {
       if (response.statusCode >= 400) {
         _setFavValue(oldStatus);
       }
-      print(response.body);
+
     } catch (error) {
       _setFavValue(oldStatus);
     }
