@@ -24,15 +24,17 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider.value(value: Auth()),
           ChangeNotifierProxyProvider<Auth, ProductsProvider>(
               create: (context) => ProductsProvider(
-                  Provider.of<Auth>(context, listen: false).token, []),
+                  Provider.of<Auth>(context, listen: false).token, [], ''),
               update: ((context, value, previous) => ProductsProvider(
-                  value.token!, previous == null ? [] : previous.items))),
+                  value.token!,
+                  previous == null ? [] : previous.items,
+                  value.userId!))),
           ChangeNotifierProvider(create: (BuildContext context) {
             return Cart();
           }),
           ChangeNotifierProxyProvider<Auth, Orders>(
-              create: (context) => Orders(
-                  Provider.of<Auth>(context, listen: false).token, []),
+              create: (context) =>
+                  Orders(Provider.of<Auth>(context, listen: false).token, []),
               update: ((context, value, previous) => Orders(
                   value.token!, previous == null ? [] : previous.orders))),
         ],
@@ -46,7 +48,9 @@ class MyApp extends StatelessWidget {
               ),
               fontFamily: 'Lato',
             ),
-            home: value.isAuth ? const ProductsOverviewScreen() : const AuthScreen(),
+            home: value.isAuth
+                ? const ProductsOverviewScreen()
+                : const AuthScreen(),
             routes: {
               '/product-details': (context) => const ProductDetailScreen(),
               '/cart': (context) => const CartScreen(),

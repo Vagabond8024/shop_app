@@ -6,7 +6,8 @@ import 'dart:convert';
 
 class ProductsProvider with ChangeNotifier {
   final String? token;
-  ProductsProvider(this.token, this._items);
+  final String userId;
+  ProductsProvider(this.token, this._items, this.userId);
 
   List<Product> _items = [
     // Product(
@@ -81,12 +82,21 @@ class ProductsProvider with ChangeNotifier {
       // if (extractedData == null) {
       //   return;
       // }
+      final favoriteResponse = await http.get(Uri.https(
+          'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
+          'userFavorites/$userId.json',
+          {'auth': token}));
+      final favoriteData = json.decode(favoriteResponse.body);
+      print(favoriteData);
+      print(extractedData);
       final List<Product> loadedProducts = [];
       extractedData.forEach((key, value) {
         loadedProducts.add(Product(
             id: key,
             title: value['title'],
-            isFavorite: value['isFavorite'],
+            isFavorite: favoriteData[key] == null
+                ? false
+                : favoriteData[key]['isFavorite'] ?? false,
             description: value['description'],
             price: value['price'],
             imageUrl: value['imageUrl']));
@@ -110,7 +120,7 @@ class ProductsProvider with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageUrl': product.imageUrl,
-            'isFavorite': product.isFavorite
+            // 'isFavorite': product.isFavorite
           }));
 
       final newProduct = Product(

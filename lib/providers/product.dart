@@ -25,14 +25,14 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleFavorites(String token) async {
+  void toggleFavorites(String token, String userId) async {
     final oldStatus = isFavorite;
 
     isFavorite = !isFavorite;
     notifyListeners();
     final url = Uri.https(
         'dummy-shop-app-e597c-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products/$id.json',
+        'userFavorites/$userId/$id.json',
         {'auth': token});
     try {
       final response =
@@ -40,6 +40,7 @@ class Product with ChangeNotifier {
       if (response.statusCode >= 400) {
         _setFavValue(oldStatus);
       }
+      print(response.body);
     } catch (error) {
       _setFavValue(oldStatus);
     }
